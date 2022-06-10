@@ -5,24 +5,21 @@ import (
 	"errors"
 	"net"
 	"sync"
-)
 
-// Newline representation in hex.
-// It's used to check for the end of a message that is comming through this transport.
-var ByteLF = byte(0x0A)
+	"github.com/bacv/pow-wow/lib"
+)
 
 var (
 	ErrorSendChannelClosed = errors.New("Send channel is closed")
 	ErrorWriteToClosed     = errors.New("Writing to a closed transport")
 )
 
-type Request string
-
 type ResponseWriter interface {
-	Write(string) error
+	Write(lib.Message) error
+	Close()
 }
 
-type HandleFunc func(ResponseWriter, Request)
+type HandleFunc func(ResponseWriter, lib.Message)
 
 type Transport struct {
 	conn      net.Conn
@@ -44,6 +41,7 @@ func NewTransport(conn net.Conn, handler HandleFunc) *Transport {
 }
 
 func (t *Transport) Spawn() error {
+	defer t.Close()
 	var wg sync.WaitGroup
 	wg.Add(2)
 	errC := make(chan error, 2)
@@ -63,7 +61,6 @@ func (t *Transport) Spawn() error {
 		close(errC)
 	}()
 
-	t.Close()
 	err := <-errC
 	return err
 }
@@ -75,10 +72,11 @@ func (t *Transport) Close() {
 
 		t.closed = true
 		close(t.stopC)
+		t.conn.Close()
 	})
 }
 
-func (t *Transport) Write(msg string) error {
+func (t *Transport) Write(msg lib.Message) error {
 	if t.IsClosed() {
 		return ErrorWriteToClosed
 	}
@@ -100,13 +98,13 @@ func (t *Transport) read(errC chan<- error) {
 		case <-t.stopC:
 			return
 		default:
-			bytes, err := bufio.NewReader(t.conn).ReadBytes(ByteLF)
+			bytes, err := bufio.NewReader(t.conn).ReadBytes(lib.ByteLF)
 			if err != nil {
 				errC <- err
 				return
 			}
 
-			t.handler(t, Request(bytes))
+			t.handler(t, lib.Message(bytes))
 		}
 	}
 }
