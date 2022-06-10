@@ -7,6 +7,8 @@ import (
 	"sync"
 )
 
+// Newline representation in hex.
+// It's used to check for the end of a message that is comming through this transport.
 var ByteLF = byte(0x0A)
 
 var (

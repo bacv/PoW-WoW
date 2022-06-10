@@ -19,4 +19,5 @@ func TestTransportWriteToClosed(t *testing.T) {
 
 	err := transport.Write("test")
 	assert.ErrorIs(t, err, ErrorWriteToClosed, "it should not be possible to write to a clossed transport")
+	assert.True(t, transport.IsClosed())
 }
