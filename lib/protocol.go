@@ -9,11 +9,16 @@ type MessageType byte
 type Message []byte
 
 const (
-	MsgRequest   = MessageType(0x01)
+	// MsgRequest is used by the client to request a challenge from the server.
+	MsgRequest = MessageType(0x01)
+	// MsgChallenge is sent by the server with a resource and required bit count for the proof.
 	MsgChallenge = MessageType(0x02)
-	MsgProof     = MessageType(0x03)
-	MsgWords     = MessageType(0x04)
-	MsgError     = MessageType(0x05)
+	// MsgProof is sent by the client with a hashcash of a received resource.
+	MsgProof = MessageType(0x03)
+	// MsgWords is sent by the server with the words of wisdom as a body.
+	MsgWords = MessageType(0x04)
+	// MsgError is a reserved message type for errors.
+	MsgError = MessageType(0x05)
 )
 
 // ErrorMessageTypeUnknown ...
