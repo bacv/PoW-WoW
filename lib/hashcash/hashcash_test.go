@@ -29,7 +29,7 @@ var commonCases = []testCase{
 func TestGetHeader(t *testing.T) {
 	tc := commonCases[0]
 	hash := NewHashcash(tc.resource, tc.bits)
-	emptyHeader := hash.getHeader()
+	emptyHeader := hash.GetHeader()
 	proofHeader := hash.Compute()
 
 	for _, header := range []string{emptyHeader, proofHeader} {

@@ -29,15 +29,15 @@ func NewHashcash(resource string, bits uint) *Hashcash {
 }
 
 func (h *Hashcash) Compute() string {
-	header := h.getHeader()
+	header := h.GetHeader()
 	for !h.verifyProof(header) {
 		h.counter++
-		header = h.getHeader()
+		header = h.GetHeader()
 	}
 	return header
 }
 
-func Verify(header string) (bool, error) {
+func (h *Hashcash) Verify(header string) (bool, error) {
 	return false, nil
 }
 
@@ -52,7 +52,7 @@ func (h *Hashcash) Digest(header string) string {
 	return fmt.Sprintf("%x", h.hasher.Sum(nil))
 }
 
-func (h *Hashcash) getHeader() string {
+func (h *Hashcash) GetHeader() string {
 	return fmt.Sprintf("1:%d::%s::%s:%s",
 		h.bits,
 		h.resource,

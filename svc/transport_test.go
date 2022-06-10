@@ -80,7 +80,6 @@ func TestTransportHandler(t *testing.T) {
 
 	go func() {
 		tB.Write(lib.NewRequestMsg())
-
 	}()
 
 	var err error
