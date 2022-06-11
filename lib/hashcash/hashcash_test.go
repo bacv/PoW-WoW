@@ -17,6 +17,7 @@ type testCase struct {
 }
 
 var commonCases = []testCase{
+	{"test1", 0, 0, 0, "01"},
 	{"test1", 1, 0, 0, "01"},
 	{"test2", 2, 0, 0, "0123"},
 	{"test3", 3, 0, 0, "01234567"},

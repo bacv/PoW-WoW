@@ -38,7 +38,8 @@ func (h *Hashcash) Compute() string {
 }
 
 func (h *Hashcash) Verify(header string) (bool, error) {
-	return false, nil
+	// TODO: check header formatting and other fields.
+	return h.verifyProof(header), nil
 }
 
 func (h *Hashcash) verifyProof(header string) bool {
@@ -65,7 +66,7 @@ func checkZeros(digest string, bits uint) bool {
 	// Do we need additional check for the last rune representing last four bits?
 	mod := bits % 4
 	runes := bits / 4
-	if mod != 0 {
+	if mod != 0 || bits == 0 {
 		runes++
 	}
 
