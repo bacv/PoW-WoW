@@ -1,17 +1,20 @@
 package main
 
 import (
-	"flag"
 	"log"
+	"math/rand"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/bacv/pow-wow/svc"
 	"github.com/bacv/pow-wow/svc/wow"
+	"github.com/namsral/flag"
 )
 
 func main() {
 	log.SetOutput(os.Stdout)
+	rand.Seed(time.Now().UnixNano())
 	port := flag.Int("port", 8080, "port to run words of wisdom server on")
 	flag.Parse()
 

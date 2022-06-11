@@ -2,6 +2,7 @@ package svc
 
 import (
 	"fmt"
+	"log"
 	"net"
 )
 
@@ -24,10 +25,16 @@ func (s *Server) Serve(port int) error {
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
+			log.Print(err)
 			continue
 		}
 
-		go s.HandleTcp(conn)
+		go func() {
+			tErr := s.HandleTcp(conn)
+			if tErr != nil {
+				log.Print(err)
+			}
+		}()
 	}
 }
 

@@ -15,14 +15,12 @@ func NewWisdomSource() svc.WisdomSource {
 		list: []string{
 			"Aim for your dreams, but don't lose yourself along the way.",
 			"The best way out is always through.",
+			"When your enemy is making a very serious mistake, don't be impolite anddisturb him.",
 		},
 	}
 }
 
 func (w *wisdomSource) GetWisdom() string {
 	i := rand.Intn(len(w.list))
-	if i < 1 {
-		i++
-	}
-	return w.list[i-1]
+	return w.list[i]
 }
