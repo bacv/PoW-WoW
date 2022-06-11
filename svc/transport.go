@@ -42,23 +42,10 @@ func NewTransport(conn net.Conn, handler HandleFunc) *Transport {
 
 func (t *Transport) Spawn() error {
 	defer t.Close()
-	var wg sync.WaitGroup
-	wg.Add(2)
-	errC := make(chan error, 2)
+	errC := make(chan error)
 
 	go func() {
-		defer wg.Done()
 		t.read(errC)
-	}()
-
-	go func() {
-		defer wg.Done()
-		t.write(errC)
-	}()
-
-	go func() {
-		wg.Wait()
-		close(errC)
 	}()
 
 	err := <-errC
@@ -81,7 +68,7 @@ func (t *Transport) Write(msg lib.Message) error {
 		return ErrorWriteToClosed
 	}
 
-	t.sendC <- []byte(msg)
+	t.conn.Write(msg)
 	return nil
 }
 
@@ -106,22 +93,5 @@ func (t *Transport) read(errC chan<- error) {
 
 			t.handler(t, lib.Message(bytes))
 		}
-	}
-}
-
-func (t *Transport) write(errC chan<- error) {
-	for {
-		select {
-		case msg, ok := <-t.sendC:
-			if !ok {
-				errC <- ErrorSendChannelClosed
-				return
-			}
-
-			t.conn.Write(msg)
-		case <-t.stopC:
-			return
-		}
-
 	}
 }
