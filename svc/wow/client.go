@@ -1,7 +1,7 @@
 package wow
 
 import (
-	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -21,6 +21,7 @@ func (s *clientSvc) Handle(w svc.ResponseWriter, r protocol.Message) {
 	mt, m, err := r.Unmarshal()
 
 	if err != nil {
+		log.Print(err)
 		return
 	}
 
@@ -38,6 +39,7 @@ func (s *clientSvc) handleMsgChallenge(w svc.ResponseWriter, m string) {
 	values := strings.Split(m, ":")
 	bits, err := strconv.ParseUint(values[1], 10, 8)
 	if err != nil {
+		log.Print(err)
 		return
 	}
 	header := hashcash.NewHashcash(values[3], uint(bits)).Compute()
@@ -45,5 +47,5 @@ func (s *clientSvc) handleMsgChallenge(w svc.ResponseWriter, m string) {
 }
 
 func (s *clientSvc) handleMsgWords(w svc.ResponseWriter, m string) {
-	fmt.Println(m)
+	log.Print(m)
 }

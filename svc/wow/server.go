@@ -3,6 +3,7 @@ package wow
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 	"sync"
 	"time"
@@ -48,6 +49,7 @@ func newWowServerService(source svc.WisdomSource, g svc.IDGenerator, b svc.LoadB
 func (s *serverSvc) Handle(w svc.ResponseWriter, r protocol.Message) {
 	mt, m, err := r.Unmarshal()
 	if err != nil {
+		log.Print(err)
 		w.Close()
 		return
 	}
@@ -96,6 +98,7 @@ func (s *serverSvc) removeConn(m string) {
 
 	id, err := extractID(m)
 	if err != nil {
+		log.Print(err)
 		return
 	}
 	delete(s.challenges, id)
@@ -107,6 +110,7 @@ func (s *serverSvc) validate(m string) bool {
 
 	id, err := extractID(m)
 	if err != nil {
+		log.Print(err)
 		return false
 	}
 
@@ -114,6 +118,10 @@ func (s *serverSvc) validate(m string) bool {
 		verified, err := h.Verify(m)
 		if verified && err == nil {
 			return true
+		}
+
+		if err != nil {
+			log.Print(err)
 		}
 	}
 	return false
