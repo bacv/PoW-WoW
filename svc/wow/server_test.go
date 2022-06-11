@@ -14,7 +14,7 @@ import (
 func TestServerHandler(t *testing.T) {
 	source := &mock.Source{Words: "mocks of wisdom"}
 	w := &mock.ResponseWriter{}
-	svc := newWowServerService(source, &mock.MockGenerator{})
+	svc := newWowServerService(source, &mock.MockGenerator{}, &mock.MockBalancer{})
 
 	// Imitate first request from client
 	svc.Handle(w, protocol.NewRequestMsg())

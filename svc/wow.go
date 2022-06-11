@@ -13,3 +13,7 @@ type WisdomSource interface {
 type IDGenerator interface {
 	GenID() string
 }
+
+type LoadBalancer interface {
+	GetChallengeBits(load int) uint
+}

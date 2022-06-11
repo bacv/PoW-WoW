@@ -17,6 +17,7 @@ type serverSvc struct {
 	challenges map[string]*hashcash.Hashcash
 	generator  svc.IDGenerator
 	source     svc.WisdomSource
+	balancer   svc.LoadBalancer
 }
 
 type generator struct{}
@@ -25,15 +26,22 @@ func (g *generator) GenID() string {
 	return fmt.Sprintf("%d", time.Now().UnixNano())
 }
 
-func NewWowServerService(source svc.WisdomSource) *serverSvc {
-	return newWowServerService(source, &generator{})
+type balancer struct{}
+
+func (b *balancer) GetChallengeBits(load int) uint {
+	return uint(10 + load)
 }
 
-func newWowServerService(source svc.WisdomSource, g svc.IDGenerator) *serverSvc {
+func NewWowServerService(source svc.WisdomSource) *serverSvc {
+	return newWowServerService(source, &generator{}, &balancer{})
+}
+
+func newWowServerService(source svc.WisdomSource, g svc.IDGenerator, b svc.LoadBalancer) *serverSvc {
 	return &serverSvc{
 		challenges: make(map[string]*hashcash.Hashcash),
 		generator:  g,
 		source:     source,
+		balancer:   b,
 	}
 }
 
@@ -75,7 +83,8 @@ func (s *serverSvc) addConn() string {
 
 	id := s.generator.GenID()
 	// A very primitive way to dynamically increase the requirements for the proof.
-	hash := hashcash.NewHashcash(id, 20)
+	bits := s.balancer.GetChallengeBits(len(s.challenges))
+	hash := hashcash.NewHashcash(id, bits)
 	header := hash.GetHeader()
 	s.challenges[id] = hash
 	return header
