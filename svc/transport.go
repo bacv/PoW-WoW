@@ -6,7 +6,7 @@ import (
 	"net"
 	"sync"
 
-	"github.com/bacv/pow-wow/lib"
+	"github.com/bacv/pow-wow/lib/protocol"
 )
 
 var (
@@ -15,11 +15,11 @@ var (
 )
 
 type ResponseWriter interface {
-	Write(lib.Message) error
+	Write(protocol.Message) error
 	Close()
 }
 
-type HandleFunc func(ResponseWriter, lib.Message)
+type HandleFunc func(ResponseWriter, protocol.Message)
 
 type Transport struct {
 	conn      net.Conn
@@ -63,7 +63,7 @@ func (t *Transport) Close() {
 	})
 }
 
-func (t *Transport) Write(msg lib.Message) error {
+func (t *Transport) Write(msg protocol.Message) error {
 	if t.IsClosed() {
 		return ErrorWriteToClosed
 	}
@@ -85,13 +85,13 @@ func (t *Transport) read(errC chan<- error) {
 		case <-t.stopC:
 			return
 		default:
-			bytes, err := bufio.NewReader(t.conn).ReadBytes(lib.ByteLF)
+			bytes, err := bufio.NewReader(t.conn).ReadBytes(protocol.ByteLF)
 			if err != nil {
 				errC <- err
 				return
 			}
 
-			t.handler(t, lib.Message(bytes))
+			t.handler(t, protocol.Message(bytes))
 		}
 	}
 }

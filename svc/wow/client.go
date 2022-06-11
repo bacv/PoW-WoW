@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bacv/pow-wow/lib"
 	"github.com/bacv/pow-wow/lib/hashcash"
+	"github.com/bacv/pow-wow/lib/protocol"
 	"github.com/bacv/pow-wow/svc"
 )
 
@@ -17,7 +17,7 @@ func NewWowClientService() svc.WowService {
 	return &clientSvc{}
 }
 
-func (s *clientSvc) Handle(w svc.ResponseWriter, r lib.Message) {
+func (s *clientSvc) Handle(w svc.ResponseWriter, r protocol.Message) {
 	mt, m, err := r.Unmarshal()
 
 	if err != nil {
@@ -25,9 +25,9 @@ func (s *clientSvc) Handle(w svc.ResponseWriter, r lib.Message) {
 	}
 
 	switch mt {
-	case lib.MsgChallenge:
+	case protocol.MsgChallenge:
 		s.handleMsgChallenge(w, m)
-	case lib.MsgWords:
+	case protocol.MsgWords:
 		s.handleMsgWords(w, m)
 	default:
 		w.Close()
@@ -41,7 +41,7 @@ func (s *clientSvc) handleMsgChallenge(w svc.ResponseWriter, m string) {
 		return
 	}
 	header := hashcash.NewHashcash(values[3], uint(bits)).Compute()
-	w.Write(lib.NewProofMsg(header))
+	w.Write(protocol.NewProofMsg(header))
 }
 
 func (s *clientSvc) handleMsgWords(w svc.ResponseWriter, m string) {

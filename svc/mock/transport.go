@@ -1,12 +1,12 @@
 package mock
 
-import "github.com/bacv/pow-wow/lib"
+import "github.com/bacv/pow-wow/lib/protocol"
 
 type ResponseWriter struct {
-	Written lib.Message
+	Written protocol.Message
 }
 
-func (w *ResponseWriter) Write(m lib.Message) error {
+func (w *ResponseWriter) Write(m protocol.Message) error {
 	w.Written = m
 	return nil
 }

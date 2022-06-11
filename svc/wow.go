@@ -1,9 +1,9 @@
 package svc
 
-import "github.com/bacv/pow-wow/lib"
+import "github.com/bacv/pow-wow/lib/protocol"
 
 type WowService interface {
-	Handle(ResponseWriter, lib.Message)
+	Handle(ResponseWriter, protocol.Message)
 }
 
 type WisdomSource interface {

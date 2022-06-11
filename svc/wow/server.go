@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bacv/pow-wow/lib"
 	"github.com/bacv/pow-wow/lib/hashcash"
+	"github.com/bacv/pow-wow/lib/protocol"
 	"github.com/bacv/pow-wow/svc"
 )
 
@@ -37,7 +37,7 @@ func newWowServerService(source svc.WisdomSource, g svc.IDGenerator) *serverSvc 
 	}
 }
 
-func (s *serverSvc) Handle(w svc.ResponseWriter, r lib.Message) {
+func (s *serverSvc) Handle(w svc.ResponseWriter, r protocol.Message) {
 	mt, m, err := r.Unmarshal()
 	if err != nil {
 		w.Close()
@@ -45,9 +45,9 @@ func (s *serverSvc) Handle(w svc.ResponseWriter, r lib.Message) {
 	}
 
 	switch mt {
-	case lib.MsgRequest:
+	case protocol.MsgRequest:
 		s.handleMsgRequest(w)
-	case lib.MsgProof:
+	case protocol.MsgProof:
 		s.handleMsgProof(w, m)
 	default:
 		w.Close()
@@ -56,12 +56,12 @@ func (s *serverSvc) Handle(w svc.ResponseWriter, r lib.Message) {
 
 func (s *serverSvc) handleMsgRequest(w svc.ResponseWriter) {
 	header := s.addConn()
-	w.Write(lib.NewChallengeMsg(header))
+	w.Write(protocol.NewChallengeMsg(header))
 }
 
 func (s *serverSvc) handleMsgProof(w svc.ResponseWriter, m string) {
 	if s.validate(m) {
-		msg := lib.NewWordsMsg(s.getWisdom())
+		msg := protocol.NewWordsMsg(s.getWisdom())
 		w.Write(msg)
 	}
 

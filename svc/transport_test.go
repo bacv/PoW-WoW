@@ -7,21 +7,21 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bacv/pow-wow/lib"
+	"github.com/bacv/pow-wow/lib/protocol"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestTransportWriteToClosed(t *testing.T) {
 	conn, _ := net.Pipe()
 
-	transport := NewTransport(conn, func(w ResponseWriter, r lib.Message) {})
+	transport := NewTransport(conn, func(w ResponseWriter, r protocol.Message) {})
 	go func() {
 		transport.Spawn()
 	}()
 	transport.Close()
 	conn.Close()
 
-	err := transport.Write(lib.Message{})
+	err := transport.Write(protocol.Message{})
 	assert.ErrorIs(t, err, ErrorWriteToClosed, "it should not be possible to write to a clossed transport")
 	assert.True(t, transport.IsClosed())
 }
@@ -31,7 +31,7 @@ func TestTransportHandler(t *testing.T) {
 	connA, connB := net.Pipe()
 
 	var sErr error
-	serverHandler := func(w ResponseWriter, r lib.Message) {
+	serverHandler := func(w ResponseWriter, r protocol.Message) {
 		mt, _, err := r.Unmarshal()
 		if err != nil {
 			sErr = err
@@ -39,16 +39,16 @@ func TestTransportHandler(t *testing.T) {
 		}
 
 		switch mt {
-		case lib.MsgRequest:
-			w.Write(lib.NewChallengeMsg("test:1"))
-		case lib.MsgProof:
-			w.Write(lib.NewWordsMsg(expected))
+		case protocol.MsgRequest:
+			w.Write(protocol.NewChallengeMsg("test:1"))
+		case protocol.MsgProof:
+			w.Write(protocol.NewWordsMsg(expected))
 		}
 	}
 
 	var cErr error
 	var result string
-	clientHandler := func(w ResponseWriter, r lib.Message) {
+	clientHandler := func(w ResponseWriter, r protocol.Message) {
 		mt, m, err := r.Unmarshal()
 		if err != nil {
 			cErr = err
@@ -56,9 +56,9 @@ func TestTransportHandler(t *testing.T) {
 		}
 
 		switch mt {
-		case lib.MsgChallenge:
-			w.Write(lib.NewProofMsg("1:1::test:::"))
-		case lib.MsgWords:
+		case protocol.MsgChallenge:
+			w.Write(protocol.NewProofMsg("1:1::test:::"))
+		case protocol.MsgWords:
 			result = m
 			w.Close()
 		}
@@ -79,7 +79,7 @@ func TestTransportHandler(t *testing.T) {
 	}()
 
 	go func() {
-		tB.Write(lib.NewRequestMsg())
+		tB.Write(protocol.NewRequestMsg())
 	}()
 
 	var err error

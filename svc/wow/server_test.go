@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/bacv/pow-wow/lib"
 	"github.com/bacv/pow-wow/lib/hashcash"
+	"github.com/bacv/pow-wow/lib/protocol"
 	"github.com/bacv/pow-wow/svc/mock"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,7 +17,7 @@ func TestServerHandler(t *testing.T) {
 	svc := newWowServerService(source, &mock.MockGenerator{})
 
 	// Imitate first request from client
-	svc.Handle(w, lib.NewRequestMsg())
+	svc.Handle(w, protocol.NewRequestMsg())
 	_, m, err := w.Written.Unmarshal()
 	assert.NoError(t, err)
 	values := strings.Split(m, ":")
@@ -27,7 +27,7 @@ func TestServerHandler(t *testing.T) {
 	bits, err := strconv.ParseUint(values[1], 10, 8)
 	assert.NoError(t, err)
 	header := hashcash.NewHashcash(values[3], uint(bits)).Compute()
-	svc.Handle(w, lib.NewProofMsg(header))
+	svc.Handle(w, protocol.NewProofMsg(header))
 	_, m, err = w.Written.Unmarshal()
 	assert.NoError(t, err)
 	assert.Equal(t, source.Words, m, "")
