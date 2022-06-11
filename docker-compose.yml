@@ -5,12 +5,19 @@ services:
       dockerfile: cmd/server/Dockerfile
       context: ./
     ports:
-     - "8080:8080"
+      - "8080:8080"
+    networks:
+      - appnet
   client:
     build:
       dockerfile: cmd/client/Dockerfile
       context: ./
+    networks:
+      - appnet
+    environment:
+      RECONN: 
+      ADDR: server:8080
 
 networks:
-  default:
-    external: true
+  appnet:
+    driver: bridge

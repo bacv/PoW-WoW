@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"math/rand"
 	"os"
@@ -10,6 +9,7 @@ import (
 
 	"github.com/bacv/pow-wow/svc"
 	"github.com/bacv/pow-wow/svc/wow"
+	"github.com/namsral/flag"
 )
 
 func main() {
