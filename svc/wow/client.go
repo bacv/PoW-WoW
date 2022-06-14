@@ -1,6 +1,7 @@
 package wow
 
 import (
+	"crypto/sha1"
 	"log"
 	"strconv"
 	"strings"
@@ -42,7 +43,7 @@ func (s *clientSvc) handleMsgChallenge(w svc.ResponseWriter, m string) {
 		log.Print(err)
 		return
 	}
-	header := hashcash.NewHashcash(values[3], uint(bits)).Compute()
+	header := hashcash.NewHashcash(values[3], uint(bits), sha1.New()).Compute()
 	w.Write(protocol.NewProofMsg(header))
 }
 

@@ -1,7 +1,6 @@
 package hashcash
 
 import (
-	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
 	"hash"
@@ -17,10 +16,10 @@ type Hashcash struct {
 	counter  uint64
 }
 
-func NewHashcash(resource string, bits uint) *Hashcash {
+func NewHashcash(resource string, bits uint, hasher hash.Hash) *Hashcash {
 	rb, _ := randomBytes(8)
 	return &Hashcash{
-		hasher:   sha1.New(),
+		hasher:   hasher,
 		bits:     bits,
 		resource: resource,
 		rand:     base64EncodeBytes(rb),

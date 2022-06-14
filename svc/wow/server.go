@@ -1,6 +1,7 @@
 package wow
 
 import (
+	"crypto/sha1"
 	"errors"
 	"fmt"
 	"log"
@@ -86,7 +87,7 @@ func (s *serverSvc) addConn() string {
 	id := s.generator.GenID()
 	// A very primitive way to dynamically increase the requirements for the proof.
 	bits := s.balancer.GetChallengeBits(len(s.challenges))
-	hash := hashcash.NewHashcash(id, bits)
+	hash := hashcash.NewHashcash(id, bits, sha1.New())
 	header := hash.GetHeader()
 	s.challenges[id] = hash
 	return header
