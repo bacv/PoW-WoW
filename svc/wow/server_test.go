@@ -1,6 +1,7 @@
 package wow
 
 import (
+	"crypto/sha1"
 	"strconv"
 	"strings"
 	"testing"
@@ -26,7 +27,7 @@ func TestServerHandler(t *testing.T) {
 	// Imitate second request from client
 	bits, err := strconv.ParseUint(values[1], 10, 8)
 	assert.NoError(t, err)
-	header := hashcash.NewHashcash(values[3], uint(bits)).Compute()
+	header := hashcash.NewHashcash(values[3], uint(bits), sha1.New()).Compute()
 	svc.Handle(w, protocol.NewProofMsg(header))
 	_, m, err = w.Written.Unmarshal()
 	assert.NoError(t, err)

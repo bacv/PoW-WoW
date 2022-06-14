@@ -1,6 +1,7 @@
 package wow
 
 import (
+	"crypto/sha1"
 	"testing"
 
 	"github.com/bacv/pow-wow/lib/hashcash"
@@ -13,7 +14,7 @@ func TestClientHandler(t *testing.T) {
 	w := &mock.ResponseWriter{}
 	svc := NewWowClientService()
 
-	header := hashcash.NewHashcash(mock.MockID, 1).GetHeader()
+	header := hashcash.NewHashcash(mock.MockID, 1, sha1.New()).GetHeader()
 	svc.Handle(w, protocol.NewChallengeMsg(header))
 	mt, _, err := w.Written.Unmarshal()
 	assert.NoError(t, err)

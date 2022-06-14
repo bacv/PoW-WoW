@@ -1,6 +1,7 @@
 package hashcash
 
 import (
+	"crypto/sha1"
 	"fmt"
 	"strings"
 	"testing"
@@ -29,7 +30,7 @@ var commonCases = []testCase{
 
 func TestGetHeader(t *testing.T) {
 	tc := commonCases[0]
-	hash := NewHashcash(tc.resource, tc.bits)
+	hash := NewHashcash(tc.resource, tc.bits, sha1.New())
 	emptyHeader := hash.GetHeader()
 	proofHeader := hash.Compute()
 
@@ -43,7 +44,7 @@ func TestGetHeader(t *testing.T) {
 
 func TestCheckZeros(t *testing.T) {
 	for _, tc := range commonCases {
-		hash := NewHashcash(tc.resource, tc.bits)
+		hash := NewHashcash(tc.resource, tc.bits, sha1.New())
 		proof := hash.Compute()
 		digest := hash.Digest(proof)
 
